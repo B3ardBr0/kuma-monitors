@@ -8,12 +8,12 @@ Re-running is safe. Monitors, notifications and status pages are matched by name
 
 ## What a run looks like
 
-Against an empty instance, with the example list:
+A real run against a throwaway Uptime Kuma 1.23.16 in Docker, on port 3901, with the example list and a random topic. Trimmed where marked:
 
 ```
 $ python provision.py
-connected to http://localhost:3001
-  created notification 'ntfy' -> my-alerts
+connected to http://localhost:3901
+  created notification 'ntfy' -> demo-a159aa06803f5421
   created group 'Public sites'
   created group 'Origins'
   created group 'Homelab'
@@ -28,8 +28,10 @@ connected to http://localhost:3001
   status page holds 11 monitors
 
 done: 11 monitors across 4 groups
-status page: http://localhost:3001/status/home
+status page: http://localhost:3901/status/home
 ```
+
+Run it again and every line says `already exists`; nothing is duplicated.
 
 ## Usage
 
@@ -51,7 +53,7 @@ KUMA_URL=http://localhost:3001 KUMA_USER=... KUMA_PASS=... NTFY_TOPIC=... ./.ven
 
 ## Every monitor has to be able to alert
 
-The first version of this marked the ntfy notification as default and set "apply to existing", and I assumed that covered everything. It didn't. Default only pre-ticks a box in the web form, and "apply to existing" only reaches monitors that exist at that moment, which was none of them. Every monitor created over the API had no notification at all, and I found out two days later when an outage paged nobody.
+The first version of this marked the ntfy notification as default and set "apply to existing", and I assumed that covered everything. It didn't. Default only pre-ticks a box in the web form, and "apply to existing" only reaches monitors that exist at that moment, which was none of them. Every monitor created over the API had no notification at all. For two days nothing could alert, and an outage at 03:35 on 20 September paged nobody.
 
 So now the notification is attached to each monitor as it's created, existing monitors without it get repaired, and `assert_alerting` refuses to finish if any real monitor is still silent. Groups are left out on purpose: a group goes down whenever a child does, so it would only send duplicates.
 
