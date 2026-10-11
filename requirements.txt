@@ -1,0 +1,2 @@
+python-socketio==5.17.0
+uptime_kuma_api==1.2.1
